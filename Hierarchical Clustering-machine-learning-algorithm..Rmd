@@ -1,0 +1,82 @@
+---
+title: "Hierarchical Clustering Machine learning"
+Subtitle: "Using Euclidean distance metric" 
+author: "Joshua Edefo"
+email: "edefojoshua2000@yahoo.com"
+date: "2024-01-23"
+output: github_document
+---
+Library
+```{r a, message=FALSE}
+library(readxl)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Data loading and cleansing
+
+```{r b}
+clus <- read_excel("C:/Users/joe62/OneDrive - Aberystwyth University/Apps/Desktop/R code/clus.xlsx")
+str(clus)
+clus$people<-as.factor(clus$people)
+str(clus)
+head(clus)
+
+```
+
+# Scatter plots and Normalization of data
+```{r c}
+# scatter plot
+
+plot(trestbps~restecg, clus)
+with(clus, text(trestbps~restecg, labels = people, pos = 4, cex=1))
+     
+
+plot (trestbps~chol, clus)
+with(clus, text(trestbps~chol, labels= hd, pos=4, cex=0.3))
+
+# normalisation of the data
+
+z <- clus[, c(1,1)]
+m<- apply(z, 2, mean)
+s<- apply(z, 2, sd)
+z<- scale(z,m, s)
+
+```
+
+Clustering formation
+```{r d}
+# calculate the Euclidean distance
+distance<-dist(z)
+
+print (distance, digits=1)
+
+# clustering dindrogram
+
+# hierarchical clustering
+hc.l <- hclust(distance)
+plot(hc.l)
+
+plot(hc.l, labels=clus$people, hang=-1)
+
+# clustering Dendogram average
+hc.l <- hclust(distance, method = "average")
+
+plot(hc.l, labels=clus$people, hang=-1)
+
+plot(hc.l, hang=-1)
+
+# clustering membership
+membership_1<- cutree(hc.l,2)
+aggregate(z,list(membership_1), mean)
+
+#actual values
+aggregate(clus[, -c(1,1)], list(membership_1), mean)
+```
+
+Session Information
+```{r e}
+sessionInfo()
+```
